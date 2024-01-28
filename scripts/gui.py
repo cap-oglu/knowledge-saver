@@ -1,14 +1,17 @@
 import sys
 #import pyperclip
 from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QTextEdit, QLabel
+from PyQt6.QtGui import QKeySequence, QShortcut
 from PyQt6.QtCore import QTimer
 import json
 import os
 from datetime import datetime
 
-CLIPBOARD_CLEAR_INTERVAL_MS = 10000
+CLIPBOARD_CLEAR_INTERVAL_MS = 60000
 #TODO add a button to clear clipboard manually
 #TODO show data in gui
+#TODO connect to database in future
+#TODO add web in future
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -40,6 +43,10 @@ class MainWindow(QMainWindow):
         self.clipboard_timer.timeout.connect(self.clear_clipboard)
         #self.clipboard_timer.start(CLIPBOARD_CLEAR_INTERVAL_MS)  # Clear the clipboard every 5 seconds
 
+        # Add a keyboard shortcut to clear the clipboard
+        self.clear_shortcut = QShortcut(QKeySequence("Ctrl+Alt+Shift+X"), self)
+        self.clear_shortcut.activated.connect(self.clear_clipboard)
+
         self.current_url = ""
     
     def clear_clipboard(self):
@@ -56,6 +63,8 @@ class MainWindow(QMainWindow):
             self.label.setText(f"URL Copied: {self.current_url}\nWaiting for additional text to be copied...")
         elif self.current_url and len(clipboard_content) > 100:
             self.save_data(clipboard_content)
+            self.clipboard_timer.stop()
+            self.clipboard_timer.start(CLIPBOARD_CLEAR_INTERVAL_MS)
 
 
     def save_data(self, text):
