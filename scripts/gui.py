@@ -28,6 +28,9 @@ class MainWindow(QMainWindow):
         self.textEdit = QTextEdit()
         layout.addWidget(self.textEdit)
 
+        self.text_edit = QTextEdit()
+        layout.addWidget(self.text_edit)
+
         """self.button = QPushButton("Save", self)
         self.button.clicked.connect(self.on_save)  # Connect button click to a method
         layout.addWidget(self.button)"""
@@ -48,7 +51,18 @@ class MainWindow(QMainWindow):
         self.clear_shortcut.activated.connect(self.clear_clipboard)
 
         self.current_url = ""
+        self.load_data()
     
+    def load_data(self):
+        data_file = "read_knowledge.json"
+
+        # If the file exists, load the data and display it in the QTextEdit
+        if os.path.exists(data_file):
+            with open(data_file, "r") as file:
+                data = json.load(file)
+                formatted_data = json.dumps(data, indent=4)
+                self.text_edit.setText(formatted_data)
+
     def clear_clipboard(self):
         self.clipboard.clear()
         self.current_url = ""
